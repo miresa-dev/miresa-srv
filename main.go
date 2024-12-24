@@ -3,7 +3,6 @@ package main
 import (
 	"net/http"
 	"strconv"
-	"fmt"
 
 	"github.com/miresa-dev/miresa-srv/internal/api"
 	"github.com/miresa-dev/miresa-srv/internal/conf"
@@ -30,6 +29,6 @@ func main() {
 	a.Get("/c", api.Conf)
 
 	r.Mount("/api/v0", a)
-	
+
 	http.ListenAndServe(":"+strconv.Itoa(config.Port), r)
 }

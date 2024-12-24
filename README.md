@@ -2,7 +2,7 @@
 
 <p align="center">
 Miresa is minimal, free software for building online forums and communities.
-
+<br/><br/>
 <a href="./LICENSE">
     <img
         alt="License: Unlicense"

@@ -1,8 +1,8 @@
 package api
 
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
 	"runtime"
 
 	"github.com/miresa-dev/miresa-srv/internal/conf"
