@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 	"fmt"
 
 	"github.com/miresa-dev/miresa-srv/internal/api"
@@ -17,7 +18,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(config)
 
 	r := chi.NewRouter()
 	a := chi.NewRouter()
@@ -31,5 +31,5 @@ func main() {
 
 	r.Mount("/api/v0", a)
 	
-	http.ListenAndServe(":8000", r)
+	http.ListenAndServe(":"+strconv.Itoa(config.Port), r)
 }
