@@ -12,7 +12,7 @@ Miresa is minimal, free software for building online forums and communities.
 <a href="https://goreportcard.com/github.com/miresa-dev/miresa-srv">
     <img
         alt="Go Report Card"
-        src="https://goreportcard.com/badge/github.com/miresa-dev/miresa/srv"
+        src="https://goreportcard.com/badge/github.com/miresa-dev/miresa-srv"
     />
 </a>
 <a href="https://github.com/miresa-dev/miresa-srv/issues">
