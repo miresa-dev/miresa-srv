@@ -15,12 +15,12 @@ type User struct {
 }
 
 type Item struct {
-	ID string `json:"id"` // The ID of the item.
-	Creator string `json:"creator"` // The ID of the User who made the Item.
-	Points int `json:"points"` // The amount of upvotes minus the amount of downvotes.
-	Title string `json:"title"` // The title of the Item. Only applicable for posts.
-	Content string `json:"content"` // The text in the item.
-	Parent string `json:"parent"` // The ID of the parent of the Item. Only applicable for comments.
-	Children []string `json:"children"` // The IDs of the replies to the Item.
+	ID        string    `json:"id"`        // The ID of the item.
+	Creator   string    `json:"creator"`   // The ID of the User who made the Item.
+	Points    int       `json:"points"`    // The amount of upvotes minus the amount of downvotes.
+	Title     string    `json:"title"`     // The title of the Item. Only applicable for posts.
+	Content   string    `json:"content"`   // The text in the item.
+	Parent    string    `json:"parent"`    // The ID of the parent of the Item. Only applicable for comments.
+	Children  []string  `json:"children"`  // The IDs of the replies to the Item.
 	Published time.Time `json:"published"` // The time when the Item was published.
 }

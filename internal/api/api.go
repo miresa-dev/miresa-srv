@@ -1,14 +1,14 @@
 package api
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
+	"log"
 	"net/http"
+	"runtime"
 	"strconv"
 	"time"
-	"log"
-	"runtime"
-	"errors"
-	"database/sql"
 
 	"github.com/miresa-dev/miresa-srv/internal/db"
 

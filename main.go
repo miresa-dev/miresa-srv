@@ -1,9 +1,9 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"strconv"
-	"log"
 
 	"github.com/miresa-dev/miresa-srv/internal/api"
 	"github.com/miresa-dev/miresa-srv/internal/conf"
@@ -39,9 +39,9 @@ func main() {
 
 	a.Get("/v", api.Version)
 
-	a.Post("/u",       api.CreateUser)
-	a.Get("/u",        api.GetAllUsers)
-	a.Get("/u/{id}",   api.GetUser)
+	a.Post("/u", api.CreateUser)
+	a.Get("/u", api.GetAllUsers)
+	a.Get("/u/{id}", api.GetUser)
 	//a.Patch("/u/{id}", api.UpdateUser)
 
 	r.Mount("/api/v0", a)
