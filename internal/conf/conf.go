@@ -8,18 +8,44 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
+type versionEndpointConf struct {
+	GoroutineCount bool `toml:"goroutine_count"`
+	GoVersion bool `toml:"go_version"`
+	OS bool `toml:"os"`
+	Arch bool `toml:"arch"`
+	ServerTime bool `toml:"server_time"`
+	Uptime bool `toml:"uptime"` // TODO: show the uptime. For now, it does nothing.
+}
+
 // Conf is a struct that holds the fields for configuring a Miresa server.
 type Conf struct {
-	Title       string `toml:"title"`
-	Port        int    `toml:"port"`
-	EasterEggs  bool   `toml:"enable_eastereggs"`
-	LogType     string `toml:"log_type"`
-	DatabaseURL string `toml:"database_url"`
+	Title           string `toml:"title"`
+	Port            int    `toml:"port"`
+	IDLength        int    `toml:"id_length"`
+	EasterEggs      bool   `toml:"enable_eastereggs"`
+	LogType         string `toml:"log_type"`
+	DatabaseURL     string `toml:"database_url"`
+	VersionEndpoint versionEndpointConf `toml:"version_endpoint"`
 }
 
 // Config is the default Conf. Once LoadConf has been called, its values are
 // filled with the server's config.
-var Config Conf
+var Config = Conf{
+	Title: "miresa",
+	Port: 8000,
+	IDLength: 64,
+	EasterEggs: true,
+	LogType: "slog",
+	DatabaseURL: os.Getenv("DATABASE_URL"),
+	VersionEndpoint: versionEndpointConf{
+		GoroutineCount: true,
+		GoVersion: true,
+		OS: true,
+		Arch: true,
+		ServerTime: true,
+		Uptime: true,
+	},
+}
 
 // LoadConf loads configuration from the user's config directory.
 func LoadConf() (Conf, error) {
