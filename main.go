@@ -39,6 +39,7 @@ func main() {
 
 	a.Get("/v", api.Version)
 
+	a.Get("/init", api.CaptchaAndSID)
 	a.Post("/u", api.CreateUser)
 	a.Get("/u", api.GetAllUsers)
 	a.Get("/u/{id}", api.GetUser)

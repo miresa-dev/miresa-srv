@@ -4,6 +4,7 @@ import "time"
 
 type User struct {
 	ID           string    `json:"id"`        // The user's ID.
+	SID          string    `json:"-"`         // The user's session ID.
 	Name         string    `json:"name"`      // The user's display name.
 	PasswordHash string    `json:"-"`         // The user's password, hashed.
 	Score        int       `json:"score"`     // Total upvotes the user recieved minutes total downvotes.

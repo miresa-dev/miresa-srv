@@ -16,6 +16,7 @@ func Init(url string) (err error) {
 
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS users(
 		id        varchar(64)   primary key,
+		sid       varchar(64)   not null,
 		name      varchar(32)   not null,
 		pw_hash   text          not null,
 		score     integer       not null,
@@ -48,7 +49,7 @@ func Close() error {
 
 func GetUser(id string) (user User, err error) {
 	var temp any
-	err = db.QueryRow(`SELECT * FROM users WHERE id=$1`, id).Scan(&user.ID, &user.Name, &user.PasswordHash, &user.Score, &user.Bio, &user.Joined, &user.IsAdmin, &user.IsBanned, &temp)
+	err = db.QueryRow(`SELECT * FROM users WHERE id=$1`, id).Scan(&user.ID, &user.SID, &user.Name, &user.PasswordHash, &user.Score, &user.Bio, &user.Joined, &user.IsAdmin, &user.IsBanned, &temp)
 	return user, err
 }
 
@@ -70,8 +71,9 @@ func GetUsers(limit int, offset int) (users []User, err error) {
 
 func AddUser(user User) error {
 	_, err := db.Exec(
-		`INSERT INTO users(id, name, pw_hash, score, bio, joined, is_admin, is_banned) VALUES($1, $2, $3, $4, $5, $6, $7, $8);`,
+		`INSERT INTO users(id, sid, name, pw_hash, score, bio, joined, is_admin, is_banned, items) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);`,
 		user.ID,
+		user.SID,
 		user.Name,
 		user.PasswordHash,
 		0,
@@ -79,6 +81,17 @@ func AddUser(user User) error {
 		user.Joined,
 		false,
 		false,
+		user.Items,
+	)
+	return err
+}
+
+func SetUserValue(id, key string, value any) error {
+	_, err := db.Exec(
+		`UPDATE users SET $1 = $2 WHERE id = $3`,
+		key,
+		value,
+		id,
 	)
 	return err
 }

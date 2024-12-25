@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"errors"
 	"log"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"time"
 
 	"github.com/miresa-dev/miresa-srv/internal/db"
+	"github.com/miresa-dev/miresa-srv/internal/verifier"
 
 	"github.com/go-chi/chi/v5"
 
@@ -17,6 +19,21 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 )
+
+// CaptchaAndSID is hosted on /init. It contains a text captcha for a user to
+// complete and a session ID associated with it.
+func CaptchaAndSID(w http.ResponseWriter, r *http.Request) {
+	sid, captcha, err := verifier.GenCaptchaSIDPair()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	pair := fmt.Sprintf(`{"sid":"%s","captcha":"%s"}`, sid, captcha)
+
+	if _, err := w.Write([]byte(pair)); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
 
 // GetUser gets a single user by ID from the database and returns them as JSON.
 func GetUser(w http.ResponseWriter, r *http.Request) {
@@ -86,6 +103,11 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !verifier.VerifyPair(user["sid"], user["captcha"]) {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	var u db.User
 
 	u.ID = nanoid.Nanoid(64, nanoid.DefaultCharset)
@@ -93,6 +115,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	u.Joined = time.Now()
 	u.Bio = ""
 	u.Items = []string{}
+	u.SID = user["sid"]
 
 	data, err := bcrypt.GenerateFromPassword([]byte(user["password"]), 10)
 	if err != nil {
@@ -105,10 +128,55 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	if err := db.AddUser(u); err != nil {
 		log.Printf("Failed to add user: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	if err := json.NewEncoder(w).Encode(u); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Printf("Failed to marshal JSON: %v\n", err)
+	}
+}
+
+// UpdateUser rewrites fields of a user from an HTTP patch request.
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+
+	u, err := db.GetUser(id)
+	if errors.Is(err, sql.ErrNoRows) {
+		w.WriteHeader(http.StatusForbidden)
+	}
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	if u.SID != "" && u.SID != r.Header["Authorization"][0] {
+		w.WriteHeader(http.StatusForbidden)
+	}
+
+	var user struct {
+		db.User
+		Password string `json:"password"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		// If we can't unmarshal request data to a user, it must be an
+		// invalid request.
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if user.Name != "" {
+		// Display names can be updated.
+		db.SetUserValue(id, "name", user.Name)
+	}
+	if user.Bio != "" {
+		db.SetUserValue(id, "bio", user.Bio)
+	}
+
+	if user.Password != "" {
+		data, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		db.SetUserValue(id, "pw_hash", string(data))
 	}
 }
