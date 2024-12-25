@@ -48,5 +48,5 @@ func main() {
 
 	// Starting the server.
 	log.Printf("Listening on :%d\n", config.Port)
-	http.ListenAndServe(":"+strconv.Itoa(config.Port), r)
+	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(config.Port), r))
 }
