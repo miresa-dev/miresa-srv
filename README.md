@@ -23,6 +23,9 @@ Miresa is minimal, free software for building online forums and communities.
 </a>
 </p>
 
+**NOTE**: Miresa Server is still in the pre-alpha development stage, suitable
+for testing purposes only.
+
 ## Demo
 
 Insert images here
