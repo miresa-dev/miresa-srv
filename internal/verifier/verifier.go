@@ -2,8 +2,8 @@ package verifier
 
 import (
 	"crypto/rand"
-	"math/big"
 	"maps"
+	"math/big"
 
 	"github.com/Kaamkiya/nanoid-go"
 )
@@ -11,9 +11,9 @@ import (
 // TODO: hash captcha responses so bots can't use this map.
 // OR: get the servers to make their own captchas. More i18n friendly.
 var captchas = map[string]string{
-	"Is ice hot or cold?": "cold",
+	"Is ice hot or cold?":                       "cold",
 	"If today is Sunday, what day is tomorrow?": "monday",
-	"How many months in a year?": "twelve",
+	"How many months in a year?":                "twelve",
 }
 
 // pairs stores SIDs and CAPTCHAs as sid: captcha.
