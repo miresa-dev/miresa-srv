@@ -97,7 +97,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: actually check the SID and CAPTCHA.
 	if user["password"] == "" || user["username"] == "" || user["sid"] == "" || user["captcha"] == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -165,18 +164,31 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	if user.Name != "" {
 		// Display names can be updated.
-		db.SetUserValue(id, "name", user.Name)
+		if err := db.SetUserName(id, user.Name); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			log.Printf("Failed to update user: %v\n", err)
+			return
+		}
 	}
 	if user.Bio != "" {
-		db.SetUserValue(id, "bio", user.Bio)
+		if err := db.SetUserBio(id, user.Bio); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			log.Printf("Failed to update user: %v\n", err)
+			return
+		}
 	}
 
 	if user.Password != "" {
 		data, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
+			log.Printf("Failed to hash password")
 			return
 		}
-		db.SetUserValue(id, "pw_hash", string(data))
+		if err = db.SetUserPasswordHash(id, string(data)); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			log.Printf("Failed to update user: %v\n", err)
+			return
+		}
 	}
 }

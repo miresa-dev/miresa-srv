@@ -43,7 +43,7 @@ func main() {
 	a.Post("/u", api.CreateUser)
 	a.Get("/u", api.GetAllUsers)
 	a.Get("/u/{id}", api.GetUser)
-	//a.Patch("/u/{id}", api.UpdateUser)
+	a.Patch("/u/{id}", api.UpdateUser)
 
 	r.Mount("/api/v0", a)
 

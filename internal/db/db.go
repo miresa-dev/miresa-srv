@@ -86,12 +86,17 @@ func AddUser(user User) error {
 	return err
 }
 
-func SetUserValue(id, key string, value any) error {
-	_, err := db.Exec(
-		`UPDATE users SET $1 = $2 WHERE id = $3`,
-		key,
-		value,
-		id,
-	)
+func SetUserBio(id, bio string) error {
+	_, err := db.Exec(`UPDATE users SET bio = $1 WHERE id = $2;`, bio, id)
+	return err
+}
+
+func SetUserPasswordHash(id, passwordHash string) error {
+	_, err := db.Exec(`UPDATE users SET pw_hash = $1 WHERE id = $2;`, passwordHash, id)
+	return err
+}
+
+func SetUserName(id, name string) error {
+	_, err := db.Exec(`UPDATE users SET name = $1 WHERE id = $2`, name, id)
 	return err
 }
