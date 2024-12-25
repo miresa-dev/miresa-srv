@@ -81,8 +81,8 @@ in-depth information.
 
 ## Support
 
-If you need support, you can open a GitHub discussion, send a message on
-[Gitter](https://matrix.to/#/#miresa:gitter.im), or send us an email.
+If you need support, you can open a GitHub discussion, ask on the
+[Matrix](https://matrix.to/#/#miresa:matrix.org) server, or send us an email.
 
 ## Roadmap
 
@@ -90,9 +90,9 @@ If you need support, you can open a GitHub discussion, send a message on
 * Make the web client
 * Users
   * [x] Create
-    * [ ] Validate session ID and captcha
+    * [x] Validate session ID and captcha
   * [x] Read
-  * [ ] Update
+  * [x] Update
   * [ ] Delete
 * Items
   * [ ] Create
