@@ -28,6 +28,10 @@ func LoadConf() (Conf, error) {
 		return Config, fmt.Errorf("failed to get user config dir: %v", err)
 	}
 
+	// For now, config can only be done in TOML.
+	// TODO: check for miresa-srv.{json,yaml,yml,toml} and use those if
+	// they exist.
+	// TODO: use the config file from the CLI flags provided.
 	confFile := filepath.Join(confDir, "miresa-srv.toml")
 	data, err := os.ReadFile(confFile)
 	if err != nil {
