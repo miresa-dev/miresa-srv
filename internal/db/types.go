@@ -7,7 +7,7 @@ type User struct {
 	SID          string    `json:"-"`         // The user's session ID.
 	Name         string    `json:"name"`      // The user's display name.
 	PasswordHash string    `json:"-"`         // The user's password, hashed.
-	Score        int       `json:"score"`     // Total upvotes the user recieved minutes total downvotes.
+	Score        int       `json:"score"`     // Total upvotes the user received minutes total downvotes.
 	Bio          string    `json:"bio"`       // The user's biography.
 	Joined       time.Time `json:"joined"`    // The time when the user joined.
 	IsAdmin      bool      `json:"is_admin"`  // If the user is an instance administrator.
