@@ -5,5 +5,7 @@ import (
 )
 
 func Home(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("<!DOCTYPE html>This is in progress."))
+	if err := w.Write([]byte("<!DOCTYPE html>This is in progress.")); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }
