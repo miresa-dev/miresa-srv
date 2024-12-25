@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"time"
 	"log"
 	"runtime"
@@ -31,6 +32,7 @@ func Version(w http.ResponseWriter, r *http.Request) {
 		// It's a map[string]string. If we can't marshal it, something
 		// is wrong.
 		w.WriteHeader(http.StatusInternalServerError)
+		log.Printf("Failed to marshal JSON: %v\n", err)
 	}
 }
 
@@ -44,10 +46,43 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		log.Printf("Failed to get user: %v\n", err)
 		return
 	}
 	if err = json.NewEncoder(w).Encode(user); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		log.Printf("Failed to marshal JSON: %v\n", err)
+	}
+}
+
+func GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	queryParams := r.URL.Query()
+	limit, err := strconv.Atoi(queryParams.Get("limit"))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	offset, err := strconv.Atoi(queryParams.Get("offset"))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	users, err := db.GetUsers(limit, offset)
+	if err != nil {
+		// There must be at least one user on the instance, so if we
+		// can't get any, something must be wrong.
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Printf("Failed to get users: %v\n", err)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(users); err != nil {
+		// If we can't marshal a list of structs, something is probably
+		// wrong on our end.
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Printf("Failed to marshal JSON: %v\n", err)
+		return
 	}
 }
 
@@ -67,18 +102,26 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	var u db.User
 
 	u.ID = nanoid.Nanoid(64, nanoid.DefaultCharset)
-	u.Name = user["name"]
+	u.Name = user["username"]
 	u.Joined = time.Now()
 	u.Bio = ""
+	u.Items = []string{}
 
 	data, err := bcrypt.GenerateFromPassword([]byte(user["password"]), 10)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		log.Printf("Failed to hash password: %v\n", err)
+		return
 	}
 
 	u.PasswordHash = string(data)
 	if err := db.AddUser(u); err != nil {
 		log.Printf("Failed to add user: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	if err := json.NewEncoder(w).Encode(u); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Printf("Failed to marshal JSON: %v\n", err)
 	}
 }

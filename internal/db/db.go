@@ -2,7 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"log"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -20,11 +19,11 @@ func Init(url string) (err error) {
 		name      varchar(32)   not null,
 		pw_hash   text          not null,
 		score     integer       not null,
-		bio       varchar(256),
+		bio       varchar(256)  not null,
 		joined    timestamp     not null,
 		is_admin  boolean       not null,
 		is_banned boolean       not null,
-		items     text[]
+		items     text[]        not null
 	);`)
 	if err != nil {
 		return err
@@ -38,7 +37,7 @@ func Init(url string) (err error) {
 		creator  varchar(64)   not null, 
 		points   integer       not null,
 		created  timestamp     not null,
-		children text[]
+		children text[]        not null
 	)`)
 	return err
 }
@@ -48,8 +47,25 @@ func Close() error {
 }
 
 func GetUser(id string) (user User, err error) {
-	err = db.QueryRow(`SELECT * FROM users WHERE id=$1`, id).Scan(&user)
+	var temp any
+	err = db.QueryRow(`SELECT * FROM users WHERE id=$1`, id).Scan(&user.ID, &user.Name, &user.PasswordHash, &user.Score, &user.Bio, &user.Joined, &user.IsAdmin, &user.IsBanned, &temp)
 	return user, err
+}
+
+func GetUsers(limit int, offset int) (users []User, err error) {
+	rows, err := db.Query(`SELECT * FROM users LIMIT $1 OFFSET $2`, limit, offset)
+	if err != nil {
+		return users, err
+	}
+	for rows.Next() {
+		var user User
+		var temp any
+		if err := rows.Scan(&user.ID, &user.Name, &user.PasswordHash, &user.Score, &user.Bio, &user.Joined, &user.IsAdmin, &user.IsBanned, &temp); err != nil {
+			return users, err
+		}
+		users = append(users, user)
+	}
+	return users, nil
 }
 
 func AddUser(user User) error {
@@ -64,8 +80,5 @@ func AddUser(user User) error {
 		false,
 		false,
 	)
-	if err != nil {
-		log.Println(err)
-	}
 	return err
 }

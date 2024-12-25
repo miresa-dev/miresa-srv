@@ -12,6 +12,7 @@ import (
 	"github.com/miresa-dev/miresa-srv/internal/web"
 
 	"github.com/go-chi/chi/v5"
+	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 )
 
 func main() {
@@ -32,12 +33,14 @@ func main() {
 	a := chi.NewRouter()
 
 	r.Use(middleware.Log)
+	r.Use(chiMiddleware.StripSlashes)
 
 	r.Get("/", web.Home)
 
 	a.Get("/v", api.Version)
 
 	a.Post("/u",       api.CreateUser)
+	a.Get("/u",        api.GetAllUsers)
 	a.Get("/u/{id}",   api.GetUser)
 	//a.Patch("/u/{id}", api.UpdateUser)
 
