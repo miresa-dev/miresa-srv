@@ -10,10 +10,11 @@ import (
 
 // Conf is a struct that holds the fields for configuring a Miresa server.
 type Conf struct {
-	Title      string `toml:"title" json:"title"`
-	Port       int    `toml:"port" json:"port"`
-	EasterEggs bool   `toml:"enable_eastereggs" json:"enable_eastereggs"`
-	LogType    string `toml:"log_type" json:"log_type"`
+	Title       string `toml:"title"`
+	Port        int    `toml:"port"`
+	EasterEggs  bool   `toml:"enable_eastereggs"`
+	LogType     string `toml:"log_type"`
+	DatabaseURL string `toml:"database_url"`
 }
 
 // Config is the default Conf. Once LoadConf has been called, its values are
