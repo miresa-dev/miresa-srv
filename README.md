@@ -38,6 +38,9 @@ Insert images here
 
 ## Installation
 
+Prerequisites:
+* Postgres
+
 If you want to customize the CSS, Miresa nees to be run from the root of the
 repository. For this, you should clone the repo:
 
@@ -68,7 +71,33 @@ the [official CLI](https://github.com/miresa-dev/mirec) or the
 [fancier web client](https://github.com/miresa-dev/mirer). The built-in web
 client is extremely minimal.
 
-You can start the server by running `miresa-srv`:
+### Database
+
+You'll need to create a Postgres database:
+
+```sql
+CREATE DATABASE miresa;
+```
+
+The server will set up the tables on its own.
+
+You'll also need to set the database URL. You can do this by editing
+`$XDG_CONFIG_HOME/miresa-srv.toml`.
+
+Please note Windows is unsupported.
+
+In your config file, specify the database URL:
+
+```toml
+database_url = "postgres://user:passwd@localhost:5432/miresa"
+```
+
+For the full config reference, see
+[the docs](https://miresa-dev.github.io/doc/selfhost/config).
+
+### Starting the server
+
+You can now start the server by running `miresa-srv`:
 
 ```bash
 ./miresa-srv
@@ -127,6 +156,7 @@ All sorts of contributions are always welcome! See the [contribution docs](https
 ### Libraries
 
 * [Chi](https://go-chi.io)
+* [jackc/pgx](https://github.com/jackc/pgx)
 
 ## License
 
