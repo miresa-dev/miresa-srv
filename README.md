@@ -21,6 +21,12 @@ Miresa is minimal, free software for building online forums and communities.
         src="https://img.shields.io/github/issues/miresa-dev/miresa-srv"
     />
 </a>
+<a href="https://github.com/miresa-dev/miresa-srv/actions/workflows/golangci-lint.yml">
+    <img
+        alt="Linter status"
+        src="https://github.com/miresa-dev/miresa-srv/actions/workflows/golangci-lint.yml/badge.svg"
+    />
+</a>
 </p>
 
 **NOTE**: Miresa Server is still in the pre-alpha development stage, suitable
