@@ -81,7 +81,30 @@ If you need support, you can open a GitHub discussion, send a message on
 ## Roadmap
 
 * Support the [full API](https://miresa-dev.github.io/doc/api/ref)
-* Make the web client look nicer
+* Make the web client
+* Users
+  * [x] Create
+    * [ ] Validate session ID and captcha
+  * [x] Read
+  * [ ] Update
+  * [ ] Delete
+* Items
+  * [ ] Create
+  * [ ] Read
+  * [ ] Update
+  * [ ] Delete
+* Configuration
+  * [ ] Allow JSON/YAML configuration
+  * [ ] More config options
+    * [ ] ID length
+    * [ ] What info to show on `/v`
+      * [x] Goroutine count
+      * [x] OS
+      * [x] Arch
+      * [x] Current server time
+      * [ ] Uptime
+* Rate-limiting
+  * [ ] 30 requests per minute
 
 ## Contributing
 
