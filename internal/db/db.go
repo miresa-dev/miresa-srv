@@ -23,7 +23,7 @@ func Init(url string) (err error) {
 		bio       varchar(256)  not null,
 		joined    timestamp     not null,
 		is_admin  boolean       not null,
-		is_banned boolean       not null,
+		is_banned boolean       not null
 	);`)
 	if err != nil {
 		return err

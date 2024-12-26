@@ -7,6 +7,7 @@ require (
 	github.com/Kaamkiya/nanoid-go v0.0.0-20241224195030-8a51a208917c
 	github.com/go-chi/chi/v5 v5.2.0
 	github.com/jackc/pgx/v5 v5.7.2
+	github.com/lib/pq v1.10.9
 	golang.org/x/crypto v0.31.0
 )
 

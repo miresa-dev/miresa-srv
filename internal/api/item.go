@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 	"errors"
 	"time"
 	"log"
@@ -31,9 +32,41 @@ func GetItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetItems(w http.ResponseWriter, r *http.Request) {
-	limit, err := strconv.Atoi(r.URL.Query["limit"])
-	offset, err := strconv.Atoi(r.URL.Query["offset"])
-	creator, err := r.URL.Query["limit"]
+	queryParams := r.URL.Query()
+
+	limit, err := strconv.Atoi(queryParams.Get("limit"))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	offset, err := strconv.Atoi(queryParams.Get("offset"))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	creator := queryParams.Get("creator")
+	if creator != "" {
+		items, err := db.GetItemsByCreator(creator, limit, offset)
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		if err = json.NewEncoder(w).Encode(items); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			log.Printf("Failed to marshal JSON: %v\n", err)
+		}
+		return
+	}
+
+	items, err := db.GetItems(limit, offset)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Printf("Failed to get items from DB: %v\n", err)
+		return
+	}
+
+	if err = json.NewEncoder(w).Encode(items); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Printf("Failed to marshal JSON: %v\n", err)
+	}
 }
 
 func CreateItem(w http.ResponseWriter, r *http.Request) {
