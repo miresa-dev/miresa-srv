@@ -12,7 +12,6 @@ type User struct {
 	Joined       time.Time `json:"joined"`    // The time when the user joined.
 	IsAdmin      bool      `json:"is_admin"`  // If the user is an instance administrator.
 	IsBanned     bool      `json:"is_banned"` // If the user is banned.
-	Items        []string  `json:"items"`     // A list of the items the user has created.
 }
 
 type Item struct {

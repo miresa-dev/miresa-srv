@@ -1,8 +1,7 @@
 package db
 
 func GetUser(id string) (user User, err error) {
-	var temp any
-	err = db.QueryRow(`SELECT * FROM users WHERE id=$1`, id).Scan(&user.ID, &user.SID, &user.Name, &user.PasswordHash, &user.Score, &user.Bio, &user.Joined, &user.IsAdmin, &user.IsBanned, &temp)
+	err = db.QueryRow(`SELECT * FROM users WHERE id=$1`, id).Scan(&user.ID, &user.SID, &user.Name, &user.PasswordHash, &user.Score, &user.Bio, &user.Joined, &user.IsAdmin, &user.IsBanned)
 	return user, err
 }
 
@@ -13,8 +12,7 @@ func GetUsers(limit int, offset int) (users []User, err error) {
 	}
 	for rows.Next() {
 		var user User
-		var temp any
-		if err := rows.Scan(&user.ID, &user.SID, &user.Name, &user.PasswordHash, &user.Score, &user.Bio, &user.Joined, &user.IsAdmin, &user.IsBanned, &temp); err != nil {
+		if err := rows.Scan(&user.ID, &user.SID, &user.Name, &user.PasswordHash, &user.Score, &user.Bio, &user.Joined, &user.IsAdmin, &user.IsBanned); err != nil {
 			return users, err
 		}
 		users = append(users, user)
@@ -24,7 +22,7 @@ func GetUsers(limit int, offset int) (users []User, err error) {
 
 func AddUser(user User) error {
 	_, err := db.Exec(
-		`INSERT INTO users(id, sid, name, pw_hash, score, bio, joined, is_admin, is_banned, items) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);`,
+		`INSERT INTO users(id, sid, name, pw_hash, score, bio, joined, is_admin, is_banned) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
 		user.ID,
 		user.SID,
 		user.Name,
@@ -34,7 +32,6 @@ func AddUser(user User) error {
 		user.Joined,
 		false,
 		false,
-		user.Items,
 	)
 	return err
 }
@@ -57,7 +54,7 @@ func SetUserName(id, name string) error {
 func GetUserBySID(sid string) (user User, err error) {
 	row := db.QueryRow(`SELECT * FROM users WHERE sid = $1`, sid)
 
-	err = row.Scan(&user.ID, &user.SID, &user.Name, &user.PasswordHash, &user.Score, &user.Bio, &user.Joined, &user.IsAdmin, &user.IsBanned, &user.Items)
+	err = row.Scan(&user.ID, &user.SID, &user.Name, &user.PasswordHash, &user.Score, &user.Bio, &user.Joined, &user.IsAdmin, &user.IsBanned)
 	return user, err
 }
 

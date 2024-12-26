@@ -186,7 +186,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	u.Name = user["username"]
 	u.Joined = time.Now()
 	u.Bio = ""
-	u.Items = []string{}
 	u.SID = user["sid"]
 
 	data, err := bcrypt.GenerateFromPassword([]byte(user["password"]), 10)

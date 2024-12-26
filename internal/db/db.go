@@ -24,7 +24,6 @@ func Init(url string) (err error) {
 		joined    timestamp     not null,
 		is_admin  boolean       not null,
 		is_banned boolean       not null,
-		items     text[]        not null
 	);`)
 	if err != nil {
 		return err
