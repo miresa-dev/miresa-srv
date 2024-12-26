@@ -35,6 +35,79 @@ func CaptchaAndSID(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Login serves an endpoint where users can authenticate themselves.
+func Login(w http.ResponseWriter, r *http.Request) {
+	var input map[string]string
+
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if input["id"] == "" || input["password"] == "" || input["sid"] == "" || input["captcha"] == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	user, err := db.GetUser(input["id"])
+	if err == sql.ErrNoRows {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(input["password"])); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if !verifier.VerifyPair(input["sid"], input["captcha"]) {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if err := db.SetUserSID(input["id"], input["sid"]); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(user); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
+
+// Logout serves an endpoint that allows users to remove their session ID,
+// effectively ending their sessions.
+func Logout(w http.ResponseWriter, r *http.Request) {
+	if len(r.Header["Authorization"]) < 1 {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	u, err := db.GetUserBySID(r.Header["Authorization"][0])
+	if errors.Is(err, sql.ErrNoRows) {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Printf("Failed to get user: %v\n", err)
+		return
+	}
+
+	if u.SID != r.Header["Authorization"][0] {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if err := db.SetUserSID(u.ID, ""); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Printf("Failed to clear user SID: %v\n", err)
+	}
+}
+
 // GetUser gets a single user by ID from the database and returns them as JSON.
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
@@ -143,12 +216,19 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	u, err := db.GetUser(id)
 	if errors.Is(err, sql.ErrNoRows) {
 		w.WriteHeader(http.StatusForbidden)
+		return
 	}
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if len(r.Header["Authorization"]) < 1 {
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 	if u.SID != "" && u.SID != r.Header["Authorization"][0] {
 		w.WriteHeader(http.StatusForbidden)
+		return
 	}
 
 	var user struct {

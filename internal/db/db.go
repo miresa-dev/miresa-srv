@@ -61,7 +61,7 @@ func GetUsers(limit int, offset int) (users []User, err error) {
 	for rows.Next() {
 		var user User
 		var temp any
-		if err := rows.Scan(&user.ID, &user.Name, &user.PasswordHash, &user.Score, &user.Bio, &user.Joined, &user.IsAdmin, &user.IsBanned, &temp); err != nil {
+		if err := rows.Scan(&user.ID, &user.SID, &user.Name, &user.PasswordHash, &user.Score, &user.Bio, &user.Joined, &user.IsAdmin, &user.IsBanned, &temp); err != nil {
 			return users, err
 		}
 		users = append(users, user)
@@ -98,5 +98,17 @@ func SetUserPasswordHash(id, passwordHash string) error {
 
 func SetUserName(id, name string) error {
 	_, err := db.Exec(`UPDATE users SET name = $1 WHERE id = $2`, name, id)
+	return err
+}
+
+func GetUserBySID(sid string) (user User, err error) {
+	row := db.QueryRow(`SELECT * FROM users WHERE sid = $1`, sid)
+
+	err = row.Scan(&user.ID, &user.SID, &user.Name, &user.PasswordHash, &user.Score, &user.Bio, &user.Joined, &user.IsAdmin, &user.IsBanned, &user.Items)
+	return user, err
+}
+
+func SetUserSID(id, sid string) error {
+	_, err := db.Exec(`UPDATE users SET sid = $1 WHERE id = $2`, sid, id)
 	return err
 }

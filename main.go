@@ -36,10 +36,14 @@ func main() {
 	r.Use(chiMiddleware.StripSlashes)
 
 	r.Get("/", web.Home)
+	//r.Get("/u/{id}", web.User)
+	//r.Get("/i/{id}", web.Item)
 
 	a.Get("/v", api.Version)
 
 	a.Get("/init", api.CaptchaAndSID)
+	a.Post("/login", api.Login)
+	a.Post("/logout", api.Logout)
 	a.Post("/u", api.CreateUser)
 	a.Get("/u", api.GetAllUsers)
 	a.Get("/u/{id}", api.GetUser)
