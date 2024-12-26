@@ -1,13 +1,13 @@
 package api
 
 import (
+	"database/sql"
+	"encoding/json"
+	"errors"
+	"log"
 	"net/http"
 	"strconv"
-	"errors"
 	"time"
-	"log"
-	"encoding/json"
-	"database/sql"
 
 	"github.com/miresa-dev/miresa-srv/internal/db"
 
@@ -119,5 +119,4 @@ func CreateItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateItem(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("todo"))
 }
