@@ -49,6 +49,11 @@ func main() {
 	a.Get("/u/{id}", api.GetUser)
 	a.Patch("/u/{id}", api.UpdateUser)
 
+	a.Get("/i", api.GetItems)
+	a.Get("/i/{id}", api.GetItem)
+	a.Post("/i", api.CreateItem)
+	a.Patch("/i/{id}", api.UpdateItem)
+
 	r.Mount("/api/v0", a)
 
 	// Starting the server.
